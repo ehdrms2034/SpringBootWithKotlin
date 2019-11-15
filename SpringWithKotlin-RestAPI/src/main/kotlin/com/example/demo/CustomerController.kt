@@ -8,22 +8,23 @@ import java.util.concurrent.ConcurrentHashMap
 
 @RestController
 class CustomerController {
+
     @Autowired
-    lateinit var customers : ConcurrentHashMap<Int,CustomerModel>
+    private lateinit var customerService: CustomerService
 
     @RequestMapping(value = ["/customer/{id}"], method = arrayOf(RequestMethod.GET))
-    fun getCustomer(@PathVariable id : Int) = customers[id]
+    fun getCustomer(@PathVariable id : Int) = customerService.getCustomer(id)
 
     @RequestMapping(value = ["/customers/"], method = arrayOf(RequestMethod.GET))
-    fun getCustomers(@RequestParam(required =  false,defaultValue = "")  nameFilter:String) =
-            customers.filter {
-                it.value.name.contains(nameFilter,true)
-            }.map(Map.Entry<Int,CustomerModel>::value).toList()
+    fun getCustomers(@RequestParam(required =  false,defaultValue = "")  nameFilter:String) = customerService.searchCustomer(nameFilter)
 
     @RequestMapping(value = ["/customer/"],method = arrayOf(RequestMethod.POST))
-    fun createCustomer(@RequestBody customer : CustomerModel) {
-        customers[customer.id] = customer
-    }
+    fun createCustomer(@RequestBody customer : CustomerModel) = customerService.createCustomer(customer)
 
+    @RequestMapping(value = ["/customer/{id}"],method = arrayOf(RequestMethod.DELETE))
+    fun deleteCustomer(@PathVariable id:Int) = customerService.deleteCustomer(id)
+
+    @RequestMapping(value = ["/customer/{id}"],method = arrayOf(RequestMethod.PUT))
+    fun updateCustoemr(@PathVariable id:Int, @RequestBody customer: CustomerModel) = customerService.updateCustomer(id,customer)
 
 }
